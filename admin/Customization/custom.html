@@ -1,0 +1,535 @@
+<html>
+	<head>
+		<title>
+			Custom page
+		</title>
+<style>
+.domName {
+	margin:0px 0px 0px 25px;font-size:12px;color:green
+}
+.domDetail {
+		width:90%;height:30px;border-top:1px solid silver;font-weight:bold;font-family:cursive; 
+	}
+	
+.array {
+	margin:15px;color:purple;font-family:cursive;
+}
+
+.object {
+	margin:15px;padding:15px;border-top:1px solid silver;font-size:12px;color:green;font-family:cursive
+}
+.singleItem {
+	margin:11px;padding:13px;border-top:1px solid silver;font-size:10px;color:red;font-family:cursive;width:100%;
+}
+
+.info {
+	color:red;font-weight:bold;font-size:8px;border:1px solid red;margin-left:15px;padding:2px;
+}
+
+.button {
+	height:25px;
+}
+</style>
+		<script type='text/javascript'>
+
+var docArray = new Array();
+
+function showMenu(e)
+{
+	var obj = e.target;
+	var m = document.getElementById("menu");
+	var stl = m.style;
+	stl.display = "block";
+	stl.left = e.x + 5 + "px";
+	stl.top = e.y - 10 +"px";
+	m.seq = obj.getAttribute("data-seq");
+}
+
+function generateCode(seq,code)
+{
+	var first = false;
+	if (!seq)
+		{
+			var m = document.getElementById("menu");
+			seq = m.seq;
+			m.style.display = "none";
+			code = {html:"",parentId:"parentId","table":""};
+			first = true;
+			seq = parseInt(seq);
+			seq = getDocSeq(seq);
+				if (!seq)
+				{
+					alert("not found");
+					return;
+				}
+		}
+
+		
+	var currentTag = docArray[seq];
+
+    var html = currentTag.html;
+    if (html.indexOf('"') > -1)
+    	html = html.split('"').join("'");
+    	
+	code.html += html;
+
+	var cLen = currentTag.children.length;
+	for (var i = 0 ; i < cLen;i++)
+	{
+		var s = currentTag.children[i];
+		generateCode(s,code);
+	}
+	
+	if (currentTag.table)
+	{
+		code.table = currentTag.table;
+		
+		code.html += "\"+"+currentTag.source +"+\"" ;
+	}
+	
+	code.html += "</" + currentTag.tag +">";
+		
+	
+	if (first)
+		{
+			var table = code.table;
+			// body onload= "adlerInit()"
+			var inlinescript =  "   	var tableDef = "+JSON.stringify(tableDefs[table]) +";\r\n"+
+								"		ADLER_SCHEMA = "+localStorage["Adler-User"] +";\r\n";
+			
+			 var jscript =  " 		var "+table+"Records = AdlerStorage.findStorage(tableInfo.tableDef).dataArray; \r\n"+
+							"		var noOfRecords = "+table+"Records.length; \r\n" +
+							"		var parent = document.getElementById(\"tableInfo.parent\");\r\n"+
+							"		var html = \"\" \r\n"+	
+							"		for (var indx = 0; indx < noOfRecords;indx++)  \r\n"+
+							"		{ \r\n"+
+							"				var "+table+" = "+table+"Records[indx]; \r\n"+
+							"				html += \""+code.html+"\";\r\n"+
+							"		}\r\n"+
+							"		parent.innerHTML = html;\r\n";
+
+			console.log(jscript);
+		}
+}
+
+function getDocSeq(domSeq)
+{
+	for (var i = docArray.length -1;i > -1;i--)
+	{
+		var currentTag = docArray[i];
+		if (currentTag.domSeq === domSeq)
+			return i;
+	}
+	return null;
+}
+
+function dragstartF(e) {
+    e.dataTransfer.setData("Text",e.target.getAttribute("data-source"));
+}			
+
+function dragenterF(e) {
+    e.stopPropagation();
+    e.preventDefault();
+}
+
+function dragoverF(e)
+{
+    e.stopPropagation();
+    e.preventDefault();
+
+    return true;
+}
+
+function dropObj(e)
+{
+	e.stopPropagation();
+	 e.preventDefault();
+	 
+	 var obj = e.target;
+	 var domseq = obj.getAttribute("data-seq");
+	var data = e.dataTransfer.getData("Text");
+
+	if (domseq)
+	{
+		var currentTag = {};
+		domseq = parseInt(domseq);
+		for (var i = docArray.length - 1; i  > -1;i--)
+	    {
+	    	currentTag = docArray[i];
+	    	if (currentTag.domSeq === domseq)
+	    	{
+	    		alert(" trying to drop "+data + " on dom  "+currentTag.tag );
+	    		currentTag.source = data;
+	    		var arr = data.split("[");
+	    		currentTag.table = arr[0];
+	    		var source = obj.getElementsByClassName("info");
+	    		
+	    		source[0].innerHTML = data;
+	    		break;
+	    	}
+	    }
+	}	
+
+
+	//document.getElementById(data);
+}
+
+function dropF(e)
+{
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    
+    var dt = e.dataTransfer;
+    var files = dt.files;
+    
+   // var pos = fixPosition(e, Adler.canvas);
+    
+    handleFiles(files);
+    
+    return false;
+}
+
+function handleFiles(files)
+{   
+    for (var i = 0; i < files.length; i++) 
+    {
+        var file = files[i];
+ 
+        var fileType = file.type;
+        var fileName = file.name;
+        
+        var reader = new FileReader();
+        
+        if (fileType === "text/html")
+        {
+	        	reader.onload = (function()
+	        	{
+	                return function(e)
+	                {
+			        	 var h = e.target.result;
+			        	 parseHTML(h);
+	                };
+	
+	        	
+	         	})();
+
+    	} else if (fileType === "application/json")
+    	{
+    			reader.onload = (function()
+	        	{
+	                return function(e)
+	                {
+			        	 var J = e.target.result;
+			        	 var json = JSON.parse(J);
+			        	 var display = "";
+			        	 display = parseJSON(json,display);
+	                };
+	
+	        	
+	         	})();
+    	}
+    	reader.readAsText(file);
+   }
+}
+
+function parseHTML(h)
+{
+	if (h.indexOf("<!doctype html>") > -1)
+		h = h.replace("<!doctype html>","");
+	var tagArray = [{"tag":"","ignore":false,children:[]}];
+
+	var display = "";
+	var script = "";
+	var style = "";
+	var linkArray = new Array();
+	var scriptArray = new Array();
+	var scriptOn = false;
+	var styleOn = false;
+	var runningSeq = 0;
+	
+	var removeTag = function(tagLc,display)
+	{
+		var currentTag = null; var results = "";
+		    for (var i = tagArray.length - 1;i>-1;i--)
+			{
+				currentTag = tagArray[i];
+				currentTag.html += results;
+				tagArray.pop();
+				display += "</div>";
+				if (!currentTag.ignore)
+					{
+						//currentTag.html  += "</" + currentTag.tag + ">";
+						//results = currentTag.html;
+						currentTag.html = currentTag.html.trim();
+						
+						docArray.push(currentTag);
+						var j = i-1; if (j > -1) tagArray[j].children.push(docArray.length - 1);
+					}
+				if (tagLc === currentTag.tag)
+					{
+						// go one up and update its html
+						//i--; if (i > -1) tagArray[i].html += results;
+						break;
+					}
+			}
+			
+		return [currentTag,display];
+	}
+	
+	                		HTMLParser(h, {
+                		  start: function( tag, attrs, unary ) {
+                			
+                		    var tagLc = tag.toLowerCase();
+                		       
+                		    var currentTag = {"tag":tagLc,"ignore":false,"html":"",children:[]};
+                		    tagArray.push(currentTag);
+                		    
+                		    if (tagLc === "html" || tagLc === "head" || tagLc === "title" || tagLc === "meta" || tagLc === "body" )
+                		    { currentTag.ignore = true	;return;}
+
+                		    if (tagLc === "link")
+                		    {
+                    		    for ( var i = 0; i < attrs.length; i++ )
+                    		    {
+                    		    	  var name = attrs[i].name;
+                    		    	  if (name === "href")
+                    		    		  linkArray.push(attrs[i].escaped)
+                    		    }
+                    		    currentTag.ignore = true;
+                    		    return;
+                		    } else if (tagLc === "script")
+                		    {
+                		    	currentTag.ignore = true;
+                		    	scriptOn = true;
+                		    	var sourceFound = false;
+                    		    for ( var i = 0; i < attrs.length; i++ )
+                    		    {
+                    		    	  var name = attrs[i].name;
+                    		    	  if (name === "src")
+                    		    	  {
+                    		    		  scriptArray.push(attrs[i].escaped);
+                    		    		  sourceFound = true;
+                    		    	  }
+                    		    }
+                    		    
+                    		    if (sourceFound)
+                    		    	return;
+                		    } else if (tagLc === "style")
+                		    {
+                		    	currentTag.ignore = true;
+                		    	styleOn = true;
+                		    }
+                		    
+                		    if (currentTag.ignore)
+                		    	return;
+                		    
+                		    var results = currentTag.html;
+                		    results += "<" + tag ; 
+                		    display += "<div class=\"domName\" >" 
+                		    +"<div class=\"domDetail\""
+                		    + "ondrop=\"dropObj(event)\" ondragover=\"dragoverF(event)\"  data-seq=\""+runningSeq+"\" onclick=\"showMenu(event)\">" 
+                		    + (tagArray.length-3)+":"+tag+"&nbsp;";
+                		    
+                		    currentTag.domSeq = runningSeq++;
+                			
+                		    for ( var i = 0; i < attrs.length; i++ )
+                		    {
+                		    	  var name = attrs[i].name;
+                				  if (name === "id" || name === "class" || name==="name")
+                						display += "&nbsp;<span>"+name+":"+attrs[i].escaped+"</span>";
+                						
+                			      results += " " + name + '="' + attrs[i].escaped + '"';
+                		    }
+
+                		   display += "<span class=\"info\" name=\"info\"><span></div>";
+                		    results += ">";currentTag.html = results;
+
+                		  },
+                		  end: function( tag ) {
+                			 var tagLc = tag.toLowerCase();
+                			var ro = removeTag(tagLc,display);
+                			var currentTag = ro[0];
+                			display = ro[1];
+
+                			if (scriptOn)
+                				scriptOn = false;
+                			else if (styleOn)
+                				styleOn = false;
+                			
+                			if (currentTag.ignore)
+                			{
+                				return;
+                			}
+                			//display += "</div>";
+                		    
+                		  },
+                		  chars: function( text ) {
+                			  var currentTag = tagArray[tagArray.length - 1];
+                			  if (scriptOn )
+                			  {
+                				  script += text;
+                			  } else if (styleOn)
+                			  {
+                				  style += text;
+                			  } else if ((!currentTag) || currentTag.ignore)
+                			  {
+                				  return;
+                			  }
+                			  else
+                				  currentTag.html += text;
+                		  },
+                		  comment: function( text ) {
+                		  	 var currentTag = tagArray[tagArray.length - 1];
+                		    currentTag.html += "<!--" + text + "-->";
+                		  }
+                		});
+                		
+                		//console.log(results);
+                		var domTree = document.getElementById("domTree");
+                		if (domTree)
+                			domTree.innerHTML = display;
+}
+tableDefs = {};
+function parseJSON(J,display)
+{
+	if (J.constructor === Array)
+			display = handleArray(J,display,"");
+	else if (typeof(J) === "object")
+			display = handleObject(J,display,"");
+
+	var jsonTree = document.getElementById("jsonTree");
+    if (jsonTree)
+       jsonTree.innerHTML = display;
+       
+	return display;
+}
+
+function handleArray(arr,display,key)
+{
+	if (key)
+		display += "<div class=\"array\">Array:"+key;
+	var J = arr[0];
+		if (J.constructor === Array)
+		{
+			display = handleArray(J,display,"");
+		} else if (typeof(J) === "object")
+			{
+				if (key)
+				{
+					tableDefs[key] = {"storeName":key,"columns":[],"dataTypes":[]};
+				}
+				display = handleObject(J,display,"",key);	
+			}
+   if (key)
+   	display += "</div>";
+   
+   return display;
+}
+
+function handleObject(obj,display,key,table)
+{
+	if (key)
+		display += "<div class=\"object\">Object:"+key;
+	for (var k in obj)
+	{
+		var val = obj[k];
+		if (!val)
+			{
+				var info = "";
+				if (table)
+				{
+					  info = " data-source=\""+table+"[indx]."+k+"\"";
+					  tableDefs[table].columns.push(k);
+					  tableDefs[table].dataTypes.push(0);
+				}
+				   
+				display += "<div ondragstart=\"dragstartF(event)\" draggable=\"true\" "+info+" class=\"singleItem\">"+k+": "+"</div>";
+				continue;
+			}
+		if (val.constructor === Array)
+			display = handleArray(val,display,k);
+		else if (typeof(val) === "object")
+			display = handleObject(val,display,k,table);
+		else
+		{
+			if (val.length > 10)
+				val = val.substring(0,10);
+				
+			var info = "";
+				if (table)
+				  {
+				  	 info = " data-source=\""+table+"[indx]."+k+"\"";
+				  	 tableDefs[table].columns.push(k);
+				  	 tableDefs[table].dataTypes.push(0);
+				  }
+				   
+			  display += "<div ondragstart=\"dragstartF(event)\" draggable=\"true\" "+info+" class=\"singleItem\">"+k+":"+val+"</div>";
+		}
+	}
+	if (key)
+   		display += "</div>";
+   
+   return display;
+}
+
+function getFromServer(url)
+{
+
+	    var xmlhttp;
+    if (window.XMLHttpRequest)
+        xmlhttp=new XMLHttpRequest();
+    
+    var finalResponse = "";
+    xmlhttp.onreadystatechange=function()
+    {
+        if (xmlhttp.readyState===4 && xmlhttp.status===200)
+            finalResponse = xmlhttp.responseText;
+    }
+    
+    xmlhttp.open("GET", url,false);
+    xmlhttp.send(null);
+	
+		
+	return finalResponse;
+}
+
+function init()
+{
+	var pageName = sessionStorage["adler-pageName"] ;
+	var layout = sessionStorage["adler-layout"];
+	var flowName = sessionStorage["adler-flowName"];
+	var path = "/AdlerGen/"+flowName+"/"+layout+"/custom/"+pageName+".html";  
+	if (!window.location.origin)
+                        window.location.origin = window.location.protocol+"//"+window.location.host;
+    path = window.location.origin + path;
+	var resp = getFromServer(path);
+	parseHTML(resp);
+}
+ 
+                document.addEventListener("dragenter", dragenterF, false);
+                document.addEventListener("dragover",dragoverF,false);
+                document.addEventListener("drop", dropF, false);
+		</script>
+	</head>
+	<body onload="init()">
+		
+	<div style="float:left;width:49%;height:100%;border:1px solid silver;overflow:scroll;">
+		<div id="domTree"></div>
+	</div>
+	<div style="float:left;width:49%;height:100%;border:1px solid silver;overflow:scroll;">
+		<!--
+		<label>JSON URL:</label><input id="serverURL" style="width:80%" type="url" value="http://www.mynexgenonline.net/homedata.php?action=homedataByCurlForAPP&ajx_fun=homedata.php&latitude=40.81207&longitude=-73.954377"/>
+		<button onclick="var url = document.getElementById("serverURL").value;getFromServer(url);">Fetch JSON from Server</button> or Drag json over this document
+		-->
+		<div id="jsonTree"></div>
+	</div>
+	<div id="menu" style="display:none;position:absolute;left:0px;top:px;">
+		<button class="button" onclick="generateCode()">Generate</button>
+	</div>
+	</body>
+	<script src="/compressed/js/htmlparser.js" type="text/javascript">
+		
+	</script>
+</html>
