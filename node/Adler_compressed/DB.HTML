@@ -1,0 +1,357 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <meta name="viewport" content="width=device-width">
+        <title>Flow 5/8/14</title>
+       <style id="adlerStyle"></style>
+<style>
+.btns {
+	-moz-box-shadow:inset 0px 0px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 0px 0px 0px #ffffff;
+	box-shadow:inset 0px 0px 0px 0px #ffffff;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+	background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+	background-color:#ededed;
+	-webkit-border-top-left-radius:6px;
+	-moz-border-radius-topleft:6px;
+	border-top-left-radius:6px;
+	-webkit-border-top-right-radius:6px;
+	-moz-border-radius-topright:6px;
+	border-top-right-radius:6px;
+	-webkit-border-bottom-right-radius:6px;
+	-moz-border-radius-bottomright:6px;
+	border-bottom-right-radius:6px;
+	-webkit-border-bottom-left-radius:6px;
+	-moz-border-radius-bottomleft:6px;
+	border-bottom-left-radius:6px;
+	text-indent:0;
+	border:1px solid #dcdcdc;
+	display:block;
+	color:#777777;
+	font-family:arial;
+	font-size:15px;
+	font-weight:bold;
+	font-style:normal;
+	height:36px;
+	line-height:36px;
+	width:100px;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px #ffffff;
+	margin-bottom:4px;
+}
+.btns:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+	background-color:#dfdfdf;
+}.btns:active {
+	position:relative;
+	top:1px;
+}
+
+
+.inp {
+	border: 1px solid;
+padding: 10px;
+margin: 10px;
+height: 38px;
+border-radius: 4px;
+border:1px solid silver;
+}
+
+.float{
+	padding:8px;
+	border:1px solid;
+	border-radius:8px;
+	border-color:gray;
+	display:table;
+	margin:4px;
+	z-index:100;
+	position:absolute;
+	background-color:rgba(58,58,58,0.4);
+}
+.generate {
+	position:absolute;left:28%;top:25%;background-color:white;z-index:36;
+	width: 510px;
+	padding: 10px;
+	border-radius: 10px;
+	box-shadow: 4px 4px 8px;
+	border: 1px solid silver;
+}
+
+.generate fieldset
+{
+	border-radius:8px;
+	padding : 4px;
+	margin:4px; 
+	width:45%;
+}
+.generate fieldset div{
+margin:10px 0px;
+}
+
+.generate button
+{
+line-height: normal;
+white-space: nowrap;
+vertical-align: baseline;
+text-align: center;
+cursor: pointer;
+margin:2px;
+font-family: inherit;
+font-size: 100%;
+padding: .5em 1em;
+color: #444;
+color: rgba(0,0,0,.8);
+border: 1px solid #999;
+border: 0 rgba(0,0,0,0);
+background-color: #E6E6E6;
+text-decoration: none;
+border-radius: 5px;
+}
+
+.generate button:hover
+{
+line-height: normal;
+white-space: nowrap;
+vertical-align: baseline;
+text-align: center;
+cursor: pointer;
+margin:2px;
+font-family: inherit;
+font-size: 100%;
+padding: .5em 1em;
+color: #444;
+color: rgba(0,0,0,.8);
+border: 1px solid #999;
+border: 0 rgba(0,0,0,0);
+background-color: rgb(170, 170, 170);
+text-decoration: none;
+border-radius: 2px;
+}
+
+
+.generate select{
+padding: .5em .6em;
+display: inline-block;
+border: 1px solid #ccc;
+box-shadow: inset 0 1px 3px #ddd;
+border-radius: 4px;
+width:90%;
+}
+            .class_tooltip {
+                position:absolute;left:45%;top:45%;width:22.649%;height:3%;color:white;
+                text-align: center;font-family: Verdana;font-size:14px;
+                border: 1px solid white;
+                -webkit-border-radius:5px;
+                -webkit-transition: all .7s linear;
+                transition: all 0.7s linear;
+                background-image: -webkit-gradient(linear, 0% 100%, 0% 0%, color-stop(0.5, rgb(16, 16, 32)), to(rgb(53, 53, 32)));
+
+                -webkit-box-shadow: 8px 7px 5px rgba(50, 50, 50, 0.75);
+            }
+            
+    .boxSelected 
+    {
+    	box-shadow:3px 3px 7px  black;border:3px solid black;
+    }
+    
+    .boxUnselected
+    {
+    	box-shadow:1px 1px 1px  purple;opacity:0.3;background-color:rgb(200,200,200);
+    }
+            
+            /*
+              Choice Menu style
+             */
+            
+			.widg {
+				float:left;width:80px;height:80px;border:1px solid rgb(54,113,160);border-radius:3px;margin-left:20px;margin-top:30px;
+			}
+			.widgLabel {
+				font-size:10px;width:90px;text-align:center;
+			} 
+			
+			.menuActive {
+				border-bottom:3px solid rgb(54,113,160);color:rgb(54,113,160);
+			}          
+</style>
+    <script name="loadedScripts" src="uglyFlow.js" type="text/javascript">
+        </script>
+
+       <script name="loadedScripts"  src="/Customization/js/adlerStorage.js" type="text/javascript" charset="utf-8">
+
+            </script>
+        
+    </head>
+    
+    <body id='body' onbeforeunload="isDirty()" style="overflow:hidden;margin:0px;">
+	<div id="drawArea" name="adlerBase" style="position:absolute;left:0px;top:0px;width:100%;height:100%;-webkit-user-select:none;background:url('adlericons/paper.jpg') repeat top left;">
+		<canvas id="canvasImage" name="adlerBase" width="1324" height="667" style="position:absolute;z-index:0;left:0px;top:0px;"></canvas>
+        <canvas id="canvas" name="adlerBase" draggable="false" width="1324" height="667" style="position:absolute;z-index:1;left:-0px;top:0px;border: 1px solid black;"></canvas>
+	</div>
+
+
+    
+        <div id="toolTip" class="class_tooltip" style="visibility:hidden;opacity:0;z-index:50" name="adlerBase">Tool Tip</div>
+
+        <div id="toolTip1" class="class_tooltip" style="visibility:hidden;opacity:0;z-index:50;width:auto;left:30%;top:90%;" name="adlerBase"></div>
+        <textarea id="ta" name="adlerDebug" rows="100" cols="50" style="z-index:0;position:absolute;top:1300px;left:100px;visibility:hidden">
+        </textarea>
+
+        <textarea name="adlerBase" id="noteCard"  style="z-index:10;position:absolute;top:1300px;left:100px;width:250px;height:250px;visibility:hidden;display:none;font-family:cursive;font-size:14px;padding:10px;;background-image:url('adlericons/noteCard.jpeg');background-size:100% 100%">
+        </textarea>   
+
+
+			<div name="adlerBase" style="position:absolute;left:10px;top:10px;">
+				<img name="adlerBase" src="adlericons/disha_logo_modified_1.png" width="75px"/>
+			</div>
+
+	 		
+            <div id='lostNFound' style="visibility:visible;left:-10px;top:2000px;position:absolute;display:none">
+            </div>
+         
+
+
+	                <div name="adlerBase" id="confirm" style="width: 100%; height: 100%;position: absolute;left:0%; top: 0%;background-color:rgba(0,0,0,0.85);display:none;font-family:cursive;font-size:12px;z-index:100;">
+	                </div>  
+
+
+    <div id="penCursorsInteractive" name="adlerBase">
+				  <img id="dbPenCursor" name="adlerBase" src="adlericons/FlowChart.png" draggable="false" width="29px" height="29px" style="position:absolute;top: 95%;left:105px;-webkit-transform: translate(-1px,-29px);visibility:hidden;"/>
+
+				  <img id="eraserPenCursor" name="adlerBase" src="adlericons/eraser.png" draggable="false" width="29px" height="29px" style="position:absolute;top: 95%;left:105px;-webkit-transform: translate(-1px,-29px);visibility:hidden;"/>
+
+  </div>
+  	<div id="penDBBox" name="adlerBase" style="background-color:rgba(255,255,255,0.5);display:none;visibility:hidden;top: 90%;left:30%;width:auto;height:auto;position:absolute;z-index:35;border:1px solid purple;padding:4px 10px 4px 5px;border-radius:4px;">  
+				<div name="adlerBase" class="boxUnSelected" style="top: 0%;left:0px;width:32px;height:32px;box-shadow:2px 2px 5px  black;float:left;margin-left:4px;">
+	              <img id="dbPen" name="adlerBase" src="adlericons/FlowChart.png" draggable="false" width="29px" height="29px" style="visibility:visible;"/>  
+	            </div> 	
+				<div name="adlerBase" class="boxUnSelected" style="top: 0%;left:0px;width:32px;height:32px;box-shadow:2px 2px 5px  black;float:left;margin-left:4px;">
+	              <img id="eraserPen" name="adlerBase" src="adlericons/eraser.png" draggable="false" width="29px" height="29px" style="visibility:visible;"/>  
+	            </div> 	            
+	            <Button id="generateButton" name="adlerBase" class="btns"
+	             draggable="false" style="float:left;line-height:30px;width:83px;height:35px;box-shadow:2px 2px 5px  black;margin-left:4px;" style="visibility:visible;">Generate</Button>  
+	            <Button id="saveButton" name="adlerBase" class="btns"
+	             draggable="false" style="float:left;line-height:30px;width:59px;height:35px;box-shadow:2px 2px 5px  black;margin-left:4px;" style="visibility:visible;">Sync</Button>  
+	            <Button id="configButton" name="adlerBase" class="btns"
+	             draggable="false" style="float:left;line-height:30px;width:59px;height:35px;box-shadow:2px 2px 5px  black;margin-left:4px;" style="visibility:visible;">Config</Button>  
+                                    
+  </div>
+
+<div id="config" name="adlerBase" style="visibility:visibility;display:none;z-index:1000;position:absolute;left:100px;top:100px;width:300px;height:408px;background-color:rgb(250,250,250);border-radius:10px;box-shadow:4px 4px 4px gray;color:white;padding-left:20px;">
+<p style="text-align:center;color:silver">DB Configuration</p>
+<table style="width:100%">
+		<tr>
+		<td>Schema:</td><td><INPUT class="inp" VALUE="adlerdt_"></td>
+	</tr>
+	<tr>
+		<td>DB Url:</td><td><INPUT class="inp" VALUE="http://www.dishatrends.com/dt/php"></td>
+	</tr>
+	<tr style="width:=100%;">
+		<td>Sync Param:</td><td><INPUT class="inp" VALUE="ac=1"></td>
+	</tr><tr>
+		<td>Ping Param:</td><td><INPUT class="inp" VALUE="ac=2"></td>
+	</tr>
+	</tr><tr>
+		<td>Query Param:</td><td><INPUT class="inp" VALUE="ac=4"></td>
+	</tr>
+	<tr>
+		<td>
+					<Button id="cancelButton" name="adlerBase" class="btns"
+	             draggable="false" style="float:left;line-height:30px;width:64px;height:35px;box-shadow:2px 2px 5px  black;margin-left:4px;" style="visibility:visible;">Cancel</Button>  
+
+		</td><td>
+					<Button id="configSaveButton" name="adlerBase" class="btns"
+	             draggable="false" style="float:left;line-height:30px;width:59px;height:35px;box-shadow:2px 2px 5px  black;margin-left:10px;" style="visibility:visible;">Save</Button>  
+
+		</td>
+	</tr>
+</table>
+</div>         
+         
+    				<div id="decision" name="adlerBase" style="z-index:1000;position:absolute;left:100px;top:100px;width:300px;height:208px;background-color:rgb(50,50,50);box-shadow:4px 4px 4px gray;color:white;display:none;visibility:hidden;padding-left:20px;">
+    					<div name="adlerBase" id="decisionScreen" style="display:none;visibility:hidden">
+    						<span id="decisionText" name="adlerBase" style="line-height:40px;">Type screen name </span>&nbsp;<input id="decisionName" type="text" placeholder="screen name"/>
+    						<br>Description:<br><br>
+    						<textarea id="decisionDescription" name="adlerBase" row="10" col="2" style="width:90%;height:40%;"></textarea>
+    					</div>
+    					<div id="decisionWidgetDiv" name="adlerBase" style="display:none;visibility:hidden">
+    						<span id="decisionText" name="adlerBase" style="padding-left:20px;line-height:40px;">Pick widget </span>&nbsp;
+    						<select id="decisionWidget" name="adlerBase">
+    						<option value='{"widgetType":"pieChart","examplePage":"/Customization/pieChart.html"}'>Pie Chart</option>
+    					</select>
+    					</div>
+						<button id="decisionButton" class="btns" style="float:left;margin:5px;" name="adlerBase">Done</button><button id="decisionCancel" style="float:left;margin:5px;" class="btns" name="adlerBase">Cancel</button>
+    				</div>   
+                        				
+    				<div id="garbage" name="adlerBase" style="display:none;visibility:hidden"></div>    
+    				<img id="ghostImage" name="adlerBase" draggable="false" style="position:absolute;left:0px;top:1000px;width:40px;height:40px;visibility:hidden;z-index:30" src="png/glyphicons_138_picture.png"/>
+ 
+<svg name="adlerBase" id="nextPage" width="93" height="86" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:80%;left:85%;z-index:35">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ 
+ <g name="adlerBase">
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="88" width="95" y="-1" x="-1"/>
+  <g name="adlerBase" display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect name="adlerBase" fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+-->
+ <g>
+  <title>Layer 1</title>
+  <ellipse name="adlerBase" stroke="#000" ry="35.0" rx="35.0" id="svg_2" cy="44.00001" cx="45.0" fill-opacity="null" stroke-opacity="null" stroke-width="3" fill="none"/>
+  <path name="adlerBase" id="svg_2" d="m45,26.000004l1,29.999996" stroke-opacity="null" stroke-linecap="null" stroke-linejoin="null" stroke-width="3" stroke="#000" fill-opacity="null" fill="none"/>
+  <path name="adlerBase" id="svg_3" d="m35,46.000004l12,12.999996" stroke-opacity="null" stroke-linecap="null" stroke-linejoin="null" stroke-width="3" stroke="#000" fill-opacity="null" fill="none"/>
+  <path name="adlerBase" id="svg_4" d="m56,46.000004l0,0zl-11,12.999996" stroke-opacity="null" stroke-linecap="null" stroke-linejoin="null" stroke-width="3" stroke="#000" fill-opacity="null" fill="none"/>
+ </g>
+</svg>
+
+
+<img id="move" name="adlerBase" src="adlericons/move.svg" style="position:absolute;visibility:hidden;z-index:35;" draggable="false"/>
+
+<div id="dbMenu" name="adlerBase" class="float" style="display:none">
+	<a href="#" name="adlerBase" id="dbOpen" class="btns">Open</a>
+	<a href="#" name="adlerBase" id="dbDownload" class="btns">Edit Data</a>
+	<a href="#" name="adlerBase" id="dbCopy" class="btns">Copy</a>
+	<a href="#" name="adlerBase" id="dbPaste" style="display:none" class="btns">Paste</a>
+	<a href="#" name="adlerBase" id="dbDelete"  class="btns">Delete</a>
+</div>
+ <img id="uploadImage" draggable="false" style="position:absolute;left:0px;top:1000px;display:none;z-index:30;-webkit-transform:translate(-12px,-17px)" src="png/glyphicons_181_download_alt.png" />          	
+<div id="generateOptions" name="adlerBase" class="generate" style="display:none">
+    <fieldset style="display:inline-block;box-shadow: 3px 3px 6px;font-weight:bold">
+        <legend>HTML pages</legend>
+
+        <div>
+            <select id="htmlPageSelect" name="adlerBase">
+			</select>
+        </div>
+
+      
+
+        <button id="htmlPageView" name="adlerBase" type="submit">View</button> 
+    </fieldset>
+	 <fieldset style="display:inline-block;float:right;box-shadow: 3px 3px 6px;font-weight:bold">
+        <legend>Android Phone</legend>
+     
+
+        <button name="adlerBase"  onclick="alert('coming in two days')" type="submit">Download App</button><button name="adlerBase" id="androidSource" type="submit">Download Source</button>
+    </fieldset>
+    <fieldset style="display:inline-block;opacity:0.4">
+        <legend>iPhone</legend>
+     
+
+        <button name="adlerBase" onclick="alert('coming in two weeks')" type="submit">Download App</button><button onclick="alert('coming in two weeks')" name="adlerBase" type="submit">Download Source</button>
+    </fieldset>
+    <fieldset style="display:inline-block;float:right;opacity:0.4">
+        <legend>Windows Phone</legend>
+     
+
+        <button name="adlerBase" type="submit" onclick="alert('coming soon')">Download App</button><button name="adlerBase" onclick="alert('coming soon')" type="submit">Download Source</button>
+    </fieldset>    
+</div>
+<div id="dropCircle" style="display:none"/>
+</body>
+
+</html>
