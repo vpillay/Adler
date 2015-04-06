@@ -1,0 +1,588 @@
+<html>
+<head>
+<title>Editor</title>
+<meta getElementsByN'viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+<link rel="stylesheet" href="css/editor.css">
+<script type="text/javascript" src="js/Editor.js"></script>
+        <script type="text/javascript" src="js/EditorWidgets.js"></script>
+		<link rel="stylesheet" href="css/widget.css">
+		<link rel="stylesheet" href="css/grids-responsive-min.css">
+
+</head>
+<body style="overflow-y:scroll;" onload="init()">
+			
+			<div id="lineDiv" style="position:fixed;left:45px;top:0px;height:1000px;width:1px;border-right:1px solid silver;z-index:3" >
+               <img id="finishFlag" src="image/finish_flag.png" style="position:absolute;left:-15px;top:0px;display:none" onclick="positionEnd()"/>
+			</div>
+            <div id="editorContainer" style="width:100%;height:1px;position:fixed;top:0px;left:0px;z-index:3;border-top:1px solid silver;overflow:hidden;" id="lineDiv">
+                
+            </div>
+
+			 <textarea id="editor"  style="width:1500px;height:100%;position:absolute;left:0px;top:0px;border:0px;padding:2px 2px 2px 48px;font-size:15px;font-family:Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;z-index:2;overflow-x:hidden;" onkeydown="assist()" onkeyup="checkShift()" onmouseDown="recordTextareaClick()"></textarea>
+			<textarea id="editorClone" style="width:1500px;height:100%;position:absolute;left:0px;top:0px;border:0px;padding:2px 2px 2px 48px;font-size:15px;font-family:Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;visibility:hidden;" ></textarea>
+            <hr id="bkMarkLine" style="width:100%;position:fixed;left:0px;top:100px;z-index:10;display:none">
+            <div id="bkMarkTag" style="border:1px solid silver;border-radius:3px;width:auto;height:35px;position:fixed;left:20px;top:0px;z-index:10;display:none;background:green;color:white;text-align:center" onmouseover="cancelBkTimer()" onmouseout="addBkTimer()">
+                <img src="image/close.png" onclick="removeBookMark()" style="position:absolute;left:-15px;top:35px;height:20px;width:20px;">
+                    <pre></pre>
+                    </div>
+            
+            <div id="garbage"></div>
+            <!-- Right Side Tool box-->
+            <div class="topBar ">
+                <!---  put closing control here -->
+                
+                <div class="toolDeactive" style="height: 35px;margin-top: 3px;" onclick="top_menu_toggl()">
+                    <span style="color: white;font-family: nyala;font-size: 18px;vertical-align: super;box-sizing: border-box;margin-left: 90px;"> Tool Box</span>
+                </div>
+            </div>
+            <div id="task_list" class="pure-g menu_active "style="">
+                
+                <!-- Drop Down Box-->
+                <div id="minimizeBlock">
+                    <div class="pure-g">
+                        <div class="pure-u-1" style="margin-top:60px;margin-left:20px;">
+                            <span style="color:white">File:</span>
+                            <select  class="editorSelect " style="margin-left:11px" id="fileList" onchange="loadFile()" >
+                                <option>file name</option>
+                            </select>
+                        </div>
+                        <div class="pure-u-1" style="margin-top:20px;margin-left:20px;">
+                            <span style="color:white">Id:</span>
+                            <select class="editorSelect" onchange="setPosition()" id="idFindList" style="margin-left:23px" >
+                                <option>Id</option>
+                            </select>
+                        </div>
+                        <div class="pure-u-1" style="margin-top:20px;margin-left:20px;">
+                            <span style="color:white">Func:</span>
+                            <select class="editorSelect "  onchange="setPosition()" id="funcFindList" style="margin-left:5px">
+                                <option>function</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Adler Editor Control-->
+                    <div class="pure-g">
+                        <div class="pure-u-1 headerTitle" >
+                            <span>Adler Editor control</span>
+                            
+                        </div>
+                        <div class="pure-u-1" style="height:100px;background-color:rgba(214,214,214,0.7);margin-left:20px;margin-right:20px;border-radius:5px;">
+                            <div>
+                                <img src="image/upload_btn.png"  class="buttonColor" onclick="uploadAdler()" id="uploadAdler1" style="float:left"/>
+                                <img src="image/add_widget_btn.png"  class="buttonColor" onclick="addWidget();" style="float:left"/>
+                            </div>
+                            <div style="padding-top:55px;margin-left:20px;">
+                                <span  style="color:black">Ids:</span>
+                                <select class="editorSelect" id="idListObj"  onchange="openWidget()" style="margin-left:8px" >
+                                    <option></option>
+                                </select>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Local Editor Control-->
+                        <div class="pure-g">
+                            <div class="pure-u-1 headerTitle" >
+                                <span>Local File control</span>
+                                
+                            </div>
+                            <div class="pure-u-1" style="height:60px;background-color:rgba(214,214,214,0.7);margin-left:20px;margin-right:20px;border-radius:5px;">
+                                <div>
+                                    <img src="image/open_btn.png"  class="buttonColor" style="float:left" onclick="openFile()"/>
+                                    <img src="image/download_btn.png" style="float:left" class="buttonColor" onclick="saveTextAsFile();"/>
+                                    <input type="file" style="float:left;display:none" id="fileUpload" onchange="handleFiles(this.files);" />
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Tool box end-->
+            <!----  Adler Widgets --->
+            
+            <div id="widget_list" style="width:600px;z-index:10;position:fixed;display:none;left:380px;top:42px;">
+                <div class="rowtop">
+                    <label style="vertical-align: super;margin-left: 8px;">
+                        Action Seq:
+                        <span style="font-weight:bold;color:white;padding: 10px;
+                            background: black;box-shadow:1px 1px 3px gray;
+                            margin-left: 5px;
+                            margin-right: 5px;
+                            border-radius: 20px;" id="widgetSeq">1</span></label>
+                    <img src="image/arrow.png" style="height:13px;width:13px;" onclick="increaseSeq()">
+                        </label>
+                        <select style="width:30%;vertical-align:bottom" id="widgetList" onchange="showWidget()">
+                            <option value="Repeat">Repeated Rows</option>
+                            <option value="Assign">Fill HTML</option>
+                            <option value="Source">Form Element</option>
+                            <option value="Click">Click</option>
+                        </select>
+                        <img src="image/cancel_btn1.png" style="height:25px;width:80px" onclick="hide_widget(0)">
+                            <img src="image/apply_btn1.png" style="height:25px;margin-top:7px;width:80px" onclick="hide_widget(1)">
+                                <img src="image/delete_btn1.png" style="height:25px;width:80px" onclick="hide_widget(2)">
+                                    </div>
+                
+                <!--Repeat Widget-->
+                <div class="container" id="Repeat"  >
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle" >
+                            <span style="text-align:center">Table Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;"   >
+                                </div>
+                        <div style="border: 1px solid gray;height:115px;" class="" >
+                            <div style="margin-top: 8px;margin-left: 29px;">
+                                <Span>Table Name:</span>
+                                <input type="text" class="Repeat inputReg" name="storeName" style="margin-left:41px;"class="inputReg" placeholder="Table Name">
+                                    </div>
+                            
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span style="vertical-align:bottom">Repeat Type:</span>
+                                <select class="Repeat wSelect" name="type" style="height:25px;width:38%;margin-left:39px">
+                                    <option value="repeat">Main Repeat</option>
+                                    <option value="repeatNested">Repeat Inside Another Repeat</option>
+                                    <option value="repeatSelect">Drop Down List Repeat</option>
+                                </select>
+                            </div>
+                            <div style="margin-top: 10px;margin-left: 29px;">
+                                <Span>Column Name:</span>
+                                <input Type="text" style="margin-left:26px;"class="Repeat inputReg" name="column" placeholder="Column Name">
+                                    
+                                    </div>
+                        </div>
+                    </div>
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">Function Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;" >
+                                </div>
+                        <div style="border: 1px solid gray;height:130px;" class="top_menu_active">
+                            <div style="margin-top: 20px;margin-left: 29px;">
+                                <Span>Before:</span>
+                                <input Type="text" style="margin-left:75px;"class="Repeat inputReg" name="beforeFunction" placeholder="Before">
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>After Each Row:</span>
+                                <input Type="text" style="margin-left:16px;"class="Repeat inputReg" name="afterEach" placeholder="For Each Row">
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>At the End:</span>
+                                <input Type="text" style="margin-left:50px;"class="Repeat inputReg" name="afterFunction" placeholder="After">
+                                    
+                                    </div>
+                        </div>
+                    </div>
+                    <div class="accordionItem" style="margin-top:5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">DB Filter Criteria</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;"    >
+                                </div>
+                        <div style="border: 1px solid gray;height:130px;" class="top_menu_active">
+                            <div style="margin-top: 8px;margin-left: 29px;">
+                                <Span style="vertical-align: super;">Filter:</span>
+                                <textarea name="filter" class="Repeat" style="margin-left:40px" placeholder='{"column":col,"cond":"=","val":val}'></textarea>
+                                
+                            </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>Sort:</span>
+                                <input Type="text" style="margin-left:47px;"placeholder='{"column":column,"order":1}' class=" Repeat inputReg" name="sort" >
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>Limit:</span>
+                                <input Type="number" style="margin-left:38px;"class="Repeat inputReg" name="limit" placeholder="100">
+                                    
+                                    </div>
+                        </div>
+                        
+                    </div>
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">REST URL Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;" >
+                                </div>
+                        <div style="border: 1px solid gray;height:130px;" class="top_menu_active"> Coming soon
+                        </div>
+                    </div>
+                    
+                </div>
+                <!--Fill Widget-->
+                <div class="container" id="Assign"style="display:none" >
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle" >
+                            <span style="text-align:center">Table Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;"  >
+                                </div>
+                        <div style="border: 1px solid gray;height:115px;" class="" >
+                            <div style="margin-top: 8px;margin-left: 29px;">
+                                <Span>Table Name:</span>
+                                <input Type="text" style="margin-left:41px;" name="storeName" class="Assign inputReg" placeholder="Table Name">
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>Column Name:</span>
+                                <input Type="text" style="margin-left:26px;"class="Assign inputReg" name="column" placeholder="Column Name">
+                                    
+                                    </div>
+                            <div style="margin-top: 0px;margin-left: 29px;">
+                                <Span style="vertical-align:bottom">Assign Type:</span>
+                                <select class="Assign" name="assignType" style="height:25px;width:38%;margin-left:38px">
+                                    <option value="multi">For each Row</option>
+                                    <option value="once">From One Row Saved Earlier</option>
+                                    
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">Function Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;" >
+                                </div>
+                        <div style="border: 1px solid gray;height:130px;" class="top_menu_active">
+                            <div style="margin-top: 30px;margin-left: 29px;">
+                                <Span>Before:</span>
+                                <input Type="text" style="margin-left:75px;"class="Assign inputReg" name="beforeFunction" placeholder="Before">
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>At the End:</span>
+                                <input Type="text" style="margin-left:50px;"class="Assign inputReg" name="afterFunction" placeholder="After">
+                                    
+                                    </div>
+                        </div>
+                    </div>
+                    <div class="accordionItem" style="margin-top:5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">DB Filter Criteria</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;"   >
+                                </div>
+                        <div style="border: 1px solid gray;height:50px;" class="top_menu_active">
+                            <div style="margin-top: 8px;margin-left: 29px;">
+                                <Span style="vertical-align: super;">Filter:</span>
+                                <textarea name="filter" class="Assign" style="margin-left:40px" placeholder='{"column":col,"cond":"=","val":val}'></textarea>
+                                
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">Pick Populate "To" Attribute</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;" >
+                                </div>
+                        <div style="border: 1px solid gray;height:50px;" class="top_menu_active">
+                            <div style="margin-top: 8px;margin-left: 29px;">
+                                <span style="text-align:center;vertical-align:bottom">Attribute:</span>
+                                <select class="Assign" name="to" style="height:25px;width:38%">
+                                    <option value="innerHTML">innerHTML</option>
+                                    <option value="src">src</option>
+                                    <option value="checked">checked</option>
+                                    <option value="value">value</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- form Element-->
+                <div class="container" id="Source" style="display:none">
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle" >
+                            <span style="text-align:center">Table Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;"   >
+                                </div>
+                        <div style="border: 1px solid gray;height:115px;" class="" >
+                            <div style="margin-top: 8px;margin-left: 29px;">
+                                <Span>Table Name:</span>
+                                <input Type="text" style="margin-left:41px;" name="storeName" class="Source inputReg" placeholder="Table Name">
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>Column Name:</span>
+                                <input Type="text" style="margin-left:26px;"class="Source inputReg" name="column" placeholder="Column Name">
+                                    
+                                    </div>
+                        </div>
+                    </div>
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">Function Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;" >
+                                </div>
+                        <div style="border: 1px solid gray;height:130px;" class="top_menu_active">
+                            <div style="margin-top: 30px;margin-left: 29px;">
+                                <Span>Before:</span>
+                                <input Type="text" style="margin-left:75px;"class="Source inputReg" name="beforeFunction" placeholder="Before">
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>At the End:</span>
+                                <input Type="text" style="margin-left:50px;"class="Source inputReg" name="afterFunction" placeholder="After">
+                                    
+                                    </div>
+                        </div>
+                    </div>
+                    <div class="accordionItem" style="margin-top:5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">Value "From" Attribute"</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;"    >
+                                </div>
+                        <div style="border: 1px solid gray;height:50px;" class="top_menu_active">
+                            <div style="margin-top: 8px;margin-left: 29px;">
+                                <Span style="vertical-align: bottom;">HTML Attribute:</span>
+                                <select class="Source" name="from" style="height:25px;width:38%">
+                                    <option value="value">value</option>
+                                    <option value="src">src</option>
+                                    <option value="checked">checked</option>
+                                    <option value="text">text</option>
+                                </select>
+                                
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">Validation</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;" >
+                                </div>
+                        <div style="border: 1px solid gray;height:100px;" class="top_menu_active">
+                            <div  style="margin-top: 8px;margin-left: 29px;">
+                                <span style="text-align:center;vertical-align: bottom;">Attribute:</span>
+                                <select class="Source" name="Mandatory" style="height:25px;width:38%">
+                                    <option value="Y">Mandatory</option>
+                                    <option value="N">Optional</option>
+                                </select>
+                            </div>
+                            <div  style="margin-top: 8px;margin-left: 29px;">
+                                <span style="text-align:center;vertical-align: bottom;">Attribute:</span>
+                                <select class="Source" name="Validation" style="height:25px;width:38%">
+                                    <option value="none">None</option>
+                                    <option value="password">Password</option>
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="numeric">Numeric</option>
+                                    <option value="creditcard">Credit Card</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--click Widget-->
+                <div class="container" id="Click" style="display:none">
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle" >
+                            <span style="text-align:center">Action Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;"   >
+                                </div>
+                        <div style="border: 1px solid gray;height:100px;" class="" >
+                            <div style="margin-top: 7px;margin-left: 70px;">
+                                <span style="text-align:center;vertical-align:bottom">Action:</span>
+                                <select style="height:25px" name="clickAction" class="Click" id="list" onchange="showBlock()">
+                                    <option value="PageNavigate">Page Navigate</option>
+                                    <option value="Submit">Submit</option>
+                                    <option value="Update">Update</option>
+                                    <option value="Delete">Delete</option>
+                                    <option value="Retrieve">Retrieve</option>
+                                    <option value="Custom">Custom</option>
+                                </select>
+                            </div><hr width="90%">
+                            <div id="goto" style="margin-left:20px">
+                                <div style="margin-top: 8px;margin-left: 19px;">
+                                    <Span>Go To Page:</span>
+                                    <input type="text" class="Click inputReg" name="page"  style="margin-left:8px;">
+                                        
+                                        </div>
+                            </div>
+                        </div>
+                        
+                    </div>    
+                    <div class="accordionItem" style="margin-top: 5px;" onclick="accordian()">
+                        <div class="headTitle"  >
+                            <span style="text-align:center">Function Related Info</span>
+                            <img src="image/dropdown_ic.png" style="height:20px;width:20px; float:right;margin-right: 25px;" >
+                                </div>
+                        <div style="border: 1px solid gray;height:130px;" class="top_menu_active">
+                            <div style="margin-top: 30px;margin-left: 29px;">
+                                <Span>Before:</span>
+                                <input Type="text" style="margin-left:75px;" class="Click inputReg" name="beforeFunction" placeholder="Before">
+                                    
+                                    </div>
+                            <div style="margin-top: 5px;margin-left: 29px;">
+                                <Span>At the End:</span>
+                                <input Type="text" style="margin-left:50px;"class="Click inputReg" name="afterFunction" placeholder="After">
+                                    
+                                    </div>
+                        </div>
+                    </div>	
+                    
+                </div>
+            </div>
+            <!--- end of Adler Widgets -->
+		
+<div id="assistObj" onclick="contextAssist()" style="position:fixed;left:300px;top:100px;border:1px solid gray;background:green;color:white;padding:5px 20px;border-radius:5px;z-index:10;display:none;visibility:hidden">
+            <span>Assist
+            </span>
+            <span style="display:none;border-left:1px solid white;margin-left:5px;padding-left:15px;">Find End
+            </span>
+        </div>
+</body>
+<script>
+        function dragenterF() {
+            var e = event;
+            e.stopPropagation();
+            e.preventDefault();
+            return true;
+        }
+    function dragoverF()
+    {
+        var e = event;
+        e.stopPropagation();
+        e.preventDefault();
+    }
+    function dropF(e)
+    { var e = event; var obj = e.target;
+
+        e.stopPropagation();
+        e.preventDefault();
+        var dt = e.dataTransfer;
+        var files = dt.files;
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var fileType = file.type;
+            
+            var fileName = file.name;
+            var fileNameArray = fileName.split(".");
+            fileName = fileNameArray[fileNameArray.length - 2];
+            var flowDetail = sessionStorage["adler-flowDetail"];
+            var fileExtension =  fileNameArray[fileNameArray.length - 1].toLowerCase();
+            var reader = new FileReader();
+            // file name becomes flowname
+            if (fileExtension === "js" && fileName.indexOf("_action") > -1)
+            {
+                reader.onload = (function(){
+                                 return function(e)
+                                 {
+                                 var data = e.target.result;
+                                 // find idObject=
+                                 var start = data.indexOf("idObject");
+                                 start = data.indexOf("{",start);
+                                 var end = data.indexOf(";",start);
+                                 var idObj = data.substring(start,end).trim();
+                                 fileName = fileName.replace("_action","");
+                                 localStorage["Adler-Editor-"+fileName+".html-idObjects"] = idObj;
+                                 idObjects = JSON.parse(idObj);
+                                 alert("loaded actions for "+fileName);
+                                 }
+                                 })()
+                                 
+                                 reader.readAsBinaryString(file);
+            }
+        }
+
+        return false;
+    }
+    function addAdlerRelatedCode()
+    {
+        var val = textarea.value;
+        // add onload
+        
+        var pos = val.indexOf("<script name=\"adlerScripts\"");
+        if (pos > -1) return;
+        
+        pos = val.indexOf("<body");
+        if (pos > -1)
+        {
+            textarea.value = val.substring(0,pos) +"<body onload=\"adlerInit()\" "+val.substring((pos+5));
+            val = textarea.value;
+            // add onload
+            pos = val.indexOf("</head>");
+            if (pos > -1)
+            {
+                var pathArray = filename.split("/");
+                var flName = pathArray[pathArray.length -1];
+                var flArray = flName.split(".");
+                val = val.substring(0,pos) +
+            "\r\n<script name=\"adlerScripts\" type=\"text\/javascript\" src=\"AdlerGen\/js\/adlerStorage.js\"><\/script>" +
+            "\r\n<script name=\"adlerScripts\" type=\"text\/javascript\" src=\"AdlerGen\/js\/DBDef.js\"><\/script>" +
+            "\r\n<script name=\"adlerScripts\" type=\"text\/javascript\" src=\"js\/"+flArray[0]+"_action.js\"><\/script>\r\n" +
+                val.substring(pos);
+                textarea.value = val;
+            }
+        }
+        // add js files
+    }
+    function uploadAdler()
+    {
+        var sd = false;
+        // check to see if AdlerStorage exist
+        try {
+            sd = AdlerStorage.syncData;
+            var cd = uploadFile();
+            if (cd === 0)
+            {
+                //removeFile();
+                fileuploaded = true;
+               // window.close();
+            }
+
+        } catch(e)
+        {
+            console.log(e.message+" "+e.stack);
+        }
+
+    }
+    
+    function uploadFile()
+    {
+        save2Local();
+        var fileType = "text/html";
+        var pathArray = filename.split("/");
+        var flName = pathArray[pathArray.length -1];
+        var flArray = flName.split("."); var ext = flArray[flArray.length - 1].toLowerCase(); flArray.pop();
+        
+        if (ext.indexOf("htm") > -1) fileType = "text/html";
+        else if (ext === "js") fileType = "text/javascript";
+        else if (ext === "css") fileType = "text/css";
+        
+        pathArray.pop(); // remove the file name
+        var folder = "/"+pathArray.join("/") +"/";
+        folder = decodeURI(folder);
+        var json = {fileData:textarea.value,fileName:flName,fileType:fileType,folder:folder};
+        jsonString = JSON.stringify(json);
+        var sd = AdlerStorage.syncData;
+        AdlerStorage.syncData = true;
+        AdlerStorage.jsonPost(filename,jsonString,"/upload/diff",false);
+        // get action.js and upload that too
+        if (ext.indexOf("htm") > -1)
+        {
+            var actionString = makeIndexes();
+            var actionFile = flArray[0]+"_action.js";
+            folder = "/"+pathArray.join("/") +"/js/";
+            folder = decodeURI(folder);
+            json = {fileData:actionString,fileName:actionFile,fileType:"text/javascript",folder:folder};
+            jsonString = JSON.stringify(json);
+            
+            var resp = AdlerStorage.jsonPost(flArray[0],jsonString,"/upload/diff",false);
+            if (resp && resp.code === 0)
+            {
+                alert("Successfully uploaded");
+                return 0;
+            } else
+            {
+                alert("unable to upload, please manually upload ");
+                        AdlerStorage.syncData = sd;
+                        return -1;
+            }
+        }
+        //
+
+
+    }
+        </script>
+                <script type="text/javascript" src="js/adlerStorage.js"></script>
+</html>
