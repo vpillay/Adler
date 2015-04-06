@@ -1,0 +1,48 @@
+
+.menuContainer
+{
+display:block;
+display:none;
+}
+.top_menu_active{
+display:none;
+}
+.widgetselect{
+margin-top: 7px;
+margin-left: 10px;
+height: 25px;
+width: 100px;
+border-radius: 4px;
+vertical-align:top;
+}
+button{
+width: 70px;
+height: 25px;
+}
+.headTitle{
+border: 1px solid gray;
+height: 34px;
+text-align: center;
+padding-top: 10px;
+font-size: 18px;
+font-weight: 500;
+color: black;
+font-family: calibri;
+}
+
+.inputReg{
+height: 27px;
+width: 45%;
+box-sizing: border-box;
+border-radius: 4px;
+padding-left: 3px;
+}
+.rowtop{
+border: 1px solid gray;
+height: 40px;
+background: linear-gradient(to bottom, #fffeff 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1));
+}
+.container{
+background-color: rgba(241,241,241,1);
+
+}
